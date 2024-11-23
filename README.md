@@ -69,7 +69,7 @@ Space Shooter is a simple, lightweight but engaging JavaFX-based game where play
 2. **Maven Configuration**: Ensure Maven is installed on your system and correctly configured. Alternatively, you can use an IDE like IntelliJ IDEA or Eclipse that supports Maven projects.
 3. **Clone the Repository**:
     ```bash
-    git clone https://github.com/hoangsonww/Space-Invader-Game.git
+    git clone https://github.com/hoangsonww/Space-Invader-Game-JavaFX.git
     cd Space-Invader-Game
     ```
    
