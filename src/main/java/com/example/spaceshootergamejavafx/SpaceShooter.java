@@ -22,11 +22,13 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.image.Image;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.Objects;
 
 public class SpaceShooter extends Application {
 
@@ -42,7 +44,6 @@ public class SpaceShooter extends Application {
 
   private boolean reset = false;
 
-  // Add a new label to display the score
   private final Label scoreLabel = new Label("Score: " + score);
 
   private final Label lifeLabel = new Label("Lives: " + numLives);
@@ -63,6 +64,8 @@ public class SpaceShooter extends Application {
 
   private Stage primaryStage;
 
+  private boolean gameRunning = false;
+
   public static void main(String[] args) {
     launch(args);
   }
@@ -73,6 +76,9 @@ public class SpaceShooter extends Application {
     primaryStage.setScene(scene);
     primaryStage.setTitle("Space Shooter");
     primaryStage.setResizable(false);
+
+    primaryStage.getIcons().add(new Image(Objects.requireNonNull(
+      getClass().getResourceAsStream("/player.png"))));
 
     Canvas canvas = new Canvas(WIDTH, HEIGHT);
     scoreLabel.setTranslateX(10);
@@ -101,6 +107,8 @@ public class SpaceShooter extends Application {
 
           @Override
           public void handle(long now) {
+            if (!gameRunning) return;
+
             if (reset) {
               this.start();
               reset = false;
@@ -131,8 +139,8 @@ public class SpaceShooter extends Application {
             }
 
             checkCollisions();
-
             checkEnemiesReachingBottom();
+
             gameObjects.addAll(newObjects);
             newObjects.clear();
 
@@ -160,27 +168,11 @@ public class SpaceShooter extends Application {
     Random random = new Random();
     int x = random.nextInt(WIDTH - 50) + 25;
 
-    boolean bossExists = false;
-
-    for (GameObject obj : gameObjects) {
-      if (obj instanceof BossEnemy) {
-        bossExists = true;
-        break;
-      }
-    }
-
-    if (!bossExists && score % 200 == 0 && score > 0) {
-      BossEnemy boss = new BossEnemy(x, -50);
-      gameObjects.add(boss);
-    } else {
-      Enemy enemy = new Enemy(x, -40);
-      gameObjects.add(enemy);
-    }
-
-    if (!bossExists && score % 200 == 0 && score > 0) {
+    if (score % 200 == 0 && score > 0 && !bossExists) {
       BossEnemy boss = new BossEnemy(x, -50);
       gameObjects.add(boss);
       showTempMessage("A boss is ahead, watch out!", 75, HEIGHT / 2 - 100, 5);
+      bossExists = true; // Ensure we don't spawn multiple bosses
     } else {
       Enemy enemy = new Enemy(x, -40);
       gameObjects.add(enemy);
@@ -216,7 +208,7 @@ public class SpaceShooter extends Application {
           scoreLabel.setText("Score: " + score);
 
           if (score % 100 == 0) {
-            Enemy.SPEED += 2;
+            Enemy.SPEED += 0.4;
           }
         }
       }
@@ -226,20 +218,18 @@ public class SpaceShooter extends Application {
         if (bullet.getBounds().intersects(powerUp.getBounds())) {
           bullet.setDead(true);
           powerUp.setDead(true);
-          score += 50; // Deduct 5 points when a bullet hits a power-up
+          score += 50;
           scoreLabel.setText("Score: " + score);
         }
       }
     }
 
     if (score % 100 == 0 && score > 0 && !levelUpShown) {
-      showTempMessage("Level Up!", (double) WIDTH / 2, HEIGHT / 2, 2);
+      showTempMessage("Level Up!", 135, HEIGHT / 2, 2);
       levelUpShown = true;
     } else if (score % 100 != 0) {
       levelUpShown = false;
     }
-
-    checkScore();
   }
 
   private void checkEnemiesReachingBottom() {
@@ -258,14 +248,88 @@ public class SpaceShooter extends Application {
         score -= 10;
         lifeLabel.setText("Lives: " + numLives);
         if (numLives < 0) {
-          enemy.SPEED = 2;
           resetGame();
         }
       }
     }
   }
 
-  private void resetGame() {
+  private void showLosingScreen() {
+    Pane losingPane = new Pane();
+    losingPane.setStyle("-fx-background-color: black;");
+
+    // Game Over Text
+    Text gameOverText = new Text("GAME OVER");
+    gameOverText.setFont(Font.font("Arial", FontWeight.BOLD, 40));
+    gameOverText.setFill(Color.RED);
+    gameOverText.setX((WIDTH - gameOverText.getLayoutBounds().getWidth()) / 2);
+    gameOverText.setY(150);
+
+    // Score Display
+    if (score < 0) {
+      score = 0;
+    }
+
+    Text scoreText = new Text("Your Score: " + score);
+    scoreText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+    scoreText.setFill(Color.WHITE);
+    scoreText.setX((WIDTH - scoreText.getLayoutBounds().getWidth()) / 2);
+    scoreText.setY(250);
+
+    // Try Again Button
+    Button tryAgainButton = new Button("Try Again");
+    tryAgainButton.setStyle(
+        "-fx-background-color: #444; -fx-text-fill: white; -fx-font-size: 18; "
+            + "-fx-font-weight: bold; -fx-padding: 10 20;");
+    tryAgainButton.setOnMouseEntered(
+        event -> {
+          tryAgainButton.setStyle(
+              "-fx-background-color: white; -fx-text-fill: black; -fx-font-size: 18; "
+                  + "-fx-font-weight: bold; -fx-padding: 10 20;");
+          tryAgainButton.setEffect(new Glow(0.5));
+        });
+    tryAgainButton.setOnMouseExited(
+        event -> {
+          tryAgainButton.setStyle(
+              "-fx-background-color: #444; -fx-text-fill: white; -fx-font-size: 18; "
+                  + "-fx-font-weight: bold; -fx-padding: 10 20;");
+          tryAgainButton.setEffect(null);
+        });
+    tryAgainButton.setLayoutX(120);
+    tryAgainButton.setLayoutY(350);
+    tryAgainButton.setOnAction(event -> restartGame());
+
+    // Exit Button
+    Button exitButton = new Button("Exit Game");
+    exitButton.setStyle(
+        "-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-size: 18; "
+            + "-fx-font-weight: bold; -fx-padding: 10 20;");
+    exitButton.setOnMouseEntered(
+        event -> {
+          exitButton.setStyle(
+              "-fx-background-color: white; -fx-text-fill: red; -fx-font-size: 18; "
+                  + "-fx-font-weight: bold; -fx-padding: 10 20;");
+          exitButton.setEffect(new Glow(0.5));
+        });
+    exitButton.setOnMouseExited(
+        event -> {
+          exitButton.setStyle(
+              "-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-size: 18; "
+                  + "-fx-font-weight: bold; -fx-padding: 10 20;");
+          exitButton.setEffect(null);
+        });
+    exitButton.setLayoutX(120);
+    exitButton.setLayoutY(450);
+    exitButton.setOnAction(event -> System.exit(0));
+
+    losingPane.getChildren().addAll(gameOverText, scoreText, tryAgainButton, exitButton);
+
+    // Create and set the losing screen scene
+    Scene losingScene = new Scene(losingPane, WIDTH, HEIGHT);
+    primaryStage.setScene(losingScene);
+  }
+
+  private void restartGame() {
     gameObjects.clear();
     numLives = 3;
     score = 0;
@@ -273,20 +337,13 @@ public class SpaceShooter extends Application {
     scoreLabel.setText("Score: " + score);
     gameObjects.add(player);
     reset = true;
-    Text lostMessage = new Text("You lost! The game has been reset.");
-    lostMessage.setFont(Font.font("Arial", FontWeight.BOLD, 18));
-    lostMessage.setFill(Color.RED);
-    lostMessage.setX((WIDTH - lostMessage.getLayoutBounds().getWidth()) / 2);
-    lostMessage.setY(HEIGHT / 2);
-    root.getChildren().add(lostMessage);
+    gameRunning = true;
+    primaryStage.setScene(scene); // Return to the main game scene
+  }
 
-    PauseTransition pause = new PauseTransition(Duration.seconds(2));
-    pause.setOnFinished(
-        event -> {
-          root.getChildren().remove(lostMessage);
-          initEventHandlers(scene);
-        });
-    pause.play();
+  private void resetGame() {
+    gameRunning = false;
+    showLosingScreen();
   }
 
   private void initEventHandlers(Scene scene) {
@@ -352,44 +409,32 @@ public class SpaceShooter extends Application {
     }
   }
 
-  private void checkScore() {
-    if (this.score >= 100) {
-      Text lostMessage = new Text("Now I dare you to pass 1000 :)");
-      lostMessage.setFont(Font.font("Arial", FontWeight.BOLD, 12));
-      lostMessage.setFill(Color.RED);
-      lostMessage.setX((WIDTH - lostMessage.getLayoutBounds().getWidth()) / 2);
-      lostMessage.setY(HEIGHT / 2 - 100);
-      root.getChildren().add(lostMessage);
-      PauseTransition pause = new PauseTransition(Duration.seconds(2));
-      pause.setOnFinished(
-          event -> {
-            root.getChildren().remove(lostMessage);
-          });
-      pause.play();
-    }
-  }
-
   private Pane createMenu() {
     Pane menuPane = new Pane();
-    menuPane.setStyle("-fx-background-color: black;");
+    menuPane.setStyle("-fx-background-color: linear-gradient(to bottom, #1e3c72, #2a5298);"); // Gradient background
 
-    Text welcomeText = new Text("   Welcome to \nSpace Shooter!");
-    welcomeText.setFont(Font.font("Arial", FontWeight.BOLD, 30));
-    welcomeText.setFill(Color.WHITE);
-    welcomeText.setX((WIDTH - welcomeText.getLayoutBounds().getWidth()) / 2);
-    welcomeText.setY(100); // Move welcome message higher on the screen
+    // Styled title
+    Text welcomeText = new Text("Welcome to\nSpace Shooter!");
+    welcomeText.setFont(Font.font("Verdana", FontWeight.EXTRA_BOLD, 36)); // Bold and larger font
+    welcomeText.setFill(Color.LIGHTCYAN); // Softer text color
+    welcomeText.setEffect(new DropShadow(10, Color.CYAN)); // Add a shadow effect
+    welcomeText.setTextAlignment(TextAlignment.CENTER);
+    welcomeText.setX(WIDTH / 2 - 150);
+    welcomeText.setY(100);
 
-    Button startButton = createButton("START", 200);
+    // Styled buttons
+    Button startButton = createStyledButton("START", 200);
     startButton.setOnAction(event -> startGame());
 
-    Button instructionsButton = createButton("INSTRUCTIONS", 300);
+    Button instructionsButton = createStyledButton("INSTRUCTIONS", 300);
     instructionsButton.setOnAction(event -> showInstructions());
 
-    Button quitButton = createButton("QUIT", 400);
+    Button quitButton = createStyledButton("QUIT", 400);
     quitButton.setOnAction(event -> System.exit(0));
 
+    // Button layout container
     VBox buttonsContainer = new VBox(20);
-    buttonsContainer.setLayoutX((WIDTH - startButton.getPrefWidth()) / 2 - 100);
+    buttonsContainer.setLayoutX(WIDTH / 2 - 75); // Center the buttons
     buttonsContainer.setLayoutY(200);
     buttonsContainer.getChildren().addAll(startButton, instructionsButton, quitButton);
 
@@ -398,23 +443,45 @@ public class SpaceShooter extends Application {
     return menuPane;
   }
 
-  private Button createButton(String text, double y) {
+  // Method to style individual buttons
+  private Button createStyledButton(String text, double y) {
     Button button = new Button(text);
-    button.setLayoutX((WIDTH - button.getPrefWidth()) / 2);
-    button.setLayoutY(y);
-    button.setTextFill(Color.WHITE);
     button.setStyle(
-        "-fx-background-color: rgba(0, 0, 0, 0.5); -fx-font-size: 20; -fx-font-weight: bold; -fx-padding: 10 20;");
-    button.setOnMouseEntered(
-        event -> {
-          button.setTextFill(Color.YELLOW);
-          button.setEffect(new Glow());
-        });
-    button.setOnMouseExited(
-        event -> {
-          button.setTextFill(Color.WHITE);
-          button.setEffect(null);
-        });
+      "-fx-background-color: linear-gradient(to right, #6a11cb, #2575fc);"
+        + "-fx-text-fill: white;"
+        + "-fx-font-size: 18;"
+        + "-fx-font-weight: bold;"
+        + "-fx-padding: 10 20;"
+        + "-fx-border-radius: 20;"
+        + "-fx-background-radius: 20;"
+        + "-fx-border-color: #ffffff;"
+        + "-fx-border-width: 2;");
+    button.setOnMouseEntered(event -> {
+      button.setStyle(
+        "-fx-background-color: linear-gradient(to right, #2575fc, #6a11cb);"
+          + "-fx-text-fill: yellow;"
+          + "-fx-font-size: 18;"
+          + "-fx-font-weight: bold;"
+          + "-fx-padding: 10 20;"
+          + "-fx-border-radius: 20;"
+          + "-fx-background-radius: 20;"
+          + "-fx-border-color: yellow;"
+          + "-fx-border-width: 2;");
+      button.setEffect(new Glow(0.5));
+    });
+    button.setOnMouseExited(event -> {
+      button.setStyle(
+        "-fx-background-color: linear-gradient(to right, #6a11cb, #2575fc);"
+          + "-fx-text-fill: white;"
+          + "-fx-font-size: 18;"
+          + "-fx-font-weight: bold;"
+          + "-fx-padding: 10 20;"
+          + "-fx-border-radius: 20;"
+          + "-fx-background-radius: 20;"
+          + "-fx-border-color: #ffffff;"
+          + "-fx-border-width: 2;");
+      button.setEffect(null);
+    });
     return button;
   }
 
@@ -426,7 +493,10 @@ public class SpaceShooter extends Application {
         "Use the A, W, S, and D keys or the arrow keys to move your spaceship.\n"
             + "Press SPACE to shoot bullets and destroy the enemies.\n"
             + "If an enemy reaches the bottom of the screen, you lose a life.\n"
-            + "The game resets if you lose all lives.");
+            + "The game resets if you lose all lives.\n"
+            + "Collect power-ups to increase your score.\n"
+            + "Defeat the boss enemy to level up and increase the difficulty.\n"
+            + "Good luck and have fun!");
     instructionsAlert.showAndWait();
   }
 
@@ -444,6 +514,7 @@ public class SpaceShooter extends Application {
   }
 
   private void startGame() {
+    gameRunning = true;
     primaryStage.setScene(scene);
   }
 }

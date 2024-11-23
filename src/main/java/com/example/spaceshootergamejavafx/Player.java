@@ -45,26 +45,30 @@ public class Player extends GameObject {
 
   @Override
   public void update() {
-    if (moveLeft && x - SPEED > 0) {
+    // Move left
+    if (moveLeft && x - WIDTH / 2 - SPEED >= 0) {
       x -= SPEED;
     }
 
-    if (moveRight && x + width + SPEED < SpaceShooter.WIDTH) {
+    // Move right
+    if (moveRight && x + WIDTH / 2 + SPEED <= SpaceShooter.WIDTH) {
       x += SPEED;
     }
 
-    if (moveForward && y - SPEED > 0) {
+    // Move up
+    if (moveForward && y - HEIGHT / 2 - SPEED >= 0) {
       y -= SPEED;
     }
 
-    if (moveBackward && y + height + SPEED < SpaceShooter.HEIGHT) {
+    // Move down
+    if (moveBackward && y + HEIGHT / 2 + SPEED <= SpaceShooter.HEIGHT) {
       y += SPEED;
     }
   }
 
   @Override
   public void render(GraphicsContext gc) {
-    // Render the overlay image, maintaining its aspect ratio
+    // Check if the overlay image exists
     if (overlayImage != null) {
       double imageWidth = overlayImage.getWidth();
       double imageHeight = overlayImage.getHeight();
@@ -72,16 +76,18 @@ public class Player extends GameObject {
       // Calculate aspect ratio
       double aspectRatio = imageWidth / imageHeight;
 
-      // Calculate scaled dimensions to fit within WIDTH x HEIGHT while maintaining aspect ratio
-      double scaledWidth = WIDTH;
-      double scaledHeight = WIDTH / aspectRatio;
+      // Double the size of the visual image dimensions
+      double scaledWidth = WIDTH * 2; // Double the width
+      double scaledHeight = HEIGHT * 2; // Double the height
 
-      if (scaledHeight > HEIGHT) {
-        scaledHeight = HEIGHT;
-        scaledWidth = HEIGHT * aspectRatio;
+      // Maintain aspect ratio
+      if (scaledHeight > scaledWidth / aspectRatio) {
+        scaledHeight = scaledWidth / aspectRatio;
+      } else {
+        scaledWidth = scaledHeight * aspectRatio;
       }
 
-      // Center the image within the player's bounding box
+      // Center the image within the hitbox
       double drawX = x - scaledWidth / 2;
       double drawY = y - scaledHeight / 2;
 

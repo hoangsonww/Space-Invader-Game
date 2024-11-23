@@ -9,7 +9,7 @@ public class Enemy extends GameObject {
 
   protected static final int WIDTH = 30;
   protected static final int HEIGHT = 30;
-  public static double SPEED = 2;
+  public static double SPEED = 1;
 
   private final Image enemyImage; // Image for the enemy
   private boolean dead = false;
