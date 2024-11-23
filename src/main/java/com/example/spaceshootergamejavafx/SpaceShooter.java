@@ -30,9 +30,9 @@ import java.util.Random;
 
 public class SpaceShooter extends Application {
 
-  public static final int WIDTH = 300;
+  public static final int WIDTH = 350;
 
-  public static final int HEIGHT = 600;
+  public static final int HEIGHT = 800;
 
   public static int numLives = 3;
 
@@ -181,7 +181,6 @@ public class SpaceShooter extends Application {
       BossEnemy boss = new BossEnemy(x, -50);
       gameObjects.add(boss);
       showTempMessage("A boss is ahead, watch out!", 75, HEIGHT / 2 - 100, 5);
-      bossExists = true;
     } else {
       Enemy enemy = new Enemy(x, -40);
       gameObjects.add(enemy);
@@ -234,7 +233,7 @@ public class SpaceShooter extends Application {
     }
 
     if (score % 100 == 0 && score > 0 && !levelUpShown) {
-      showTempMessage("Level Up!", 110, HEIGHT / 2, 2);
+      showTempMessage("Level Up!", (double) WIDTH / 2, HEIGHT / 2, 2);
       levelUpShown = true;
     } else if (score % 100 != 0) {
       levelUpShown = false;
@@ -303,9 +302,11 @@ public class SpaceShooter extends Application {
               player.setMoveRight(true);
               break;
             case S:
+            case DOWN:
               player.setMoveBackward(true);
               break;
             case W:
+            case UP:
               player.setMoveForward(true);
               break;
             case SPACE:
@@ -326,9 +327,11 @@ public class SpaceShooter extends Application {
               player.setMoveRight(false);
               break;
             case S:
+            case DOWN:
               player.setMoveBackward(false);
               break;
             case W:
+            case UP:
               player.setMoveForward(false);
               break;
           }
@@ -379,13 +382,13 @@ public class SpaceShooter extends Application {
     Button startButton = createButton("START", 200);
     startButton.setOnAction(event -> startGame());
 
-    Button instructionsButton = createButton("Show Instructions", 300);
+    Button instructionsButton = createButton("INSTRUCTIONS", 300);
     instructionsButton.setOnAction(event -> showInstructions());
 
     Button quitButton = createButton("QUIT", 400);
     quitButton.setOnAction(event -> System.exit(0));
 
-    VBox buttonsContainer = new VBox(20); // Add buttons container to center-align the buttons
+    VBox buttonsContainer = new VBox(20);
     buttonsContainer.setLayoutX((WIDTH - startButton.getPrefWidth()) / 2 - 100);
     buttonsContainer.setLayoutY(200);
     buttonsContainer.getChildren().addAll(startButton, instructionsButton, quitButton);

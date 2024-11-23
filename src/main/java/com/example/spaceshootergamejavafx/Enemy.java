@@ -1,8 +1,9 @@
 package com.example.spaceshootergamejavafx;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+import java.util.Objects;
 
 public class Enemy extends GameObject {
 
@@ -10,8 +11,13 @@ public class Enemy extends GameObject {
   protected static final int HEIGHT = 30;
   public static double SPEED = 2;
 
+  private final Image enemyImage; // Image for the enemy
+  private boolean dead = false;
+
   public Enemy(double x, double y) {
     super(x, y, WIDTH, HEIGHT);
+    // Load the enemy image from resources
+    this.enemyImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/enemy.png")));
   }
 
   @Override
@@ -21,8 +27,14 @@ public class Enemy extends GameObject {
 
   @Override
   public void render(GraphicsContext gc) {
-    gc.setFill(Color.RED);
-    gc.fillRect(x - WIDTH / 2, y - HEIGHT / 2, WIDTH, HEIGHT);
+    if (enemyImage != null) {
+      // Draw the enemy image, scaled to fit the enemy's dimensions
+      gc.drawImage(enemyImage, x - WIDTH / 2, y - HEIGHT / 2, WIDTH, HEIGHT);
+    } else {
+      // Fallback: Render a red rectangle if the image is not loaded
+      gc.setFill(Color.RED);
+      gc.fillRect(x - WIDTH / 2, y - HEIGHT / 2, WIDTH, HEIGHT);
+    }
   }
 
   @Override
@@ -34,8 +46,6 @@ public class Enemy extends GameObject {
   public double getHeight() {
     return HEIGHT;
   }
-
-  private boolean dead = false;
 
   public void setDead(boolean dead) {
     this.dead = dead;

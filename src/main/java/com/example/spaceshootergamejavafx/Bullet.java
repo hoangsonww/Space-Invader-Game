@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 public class Bullet extends GameObject {
 
   public static final int WIDTH = 4;
-  public static final int HEIGHT = 20;
+  public static final int HEIGHT = 15;
   private static final double SPEED = 7;
 
   public Bullet(double x, double y) {
