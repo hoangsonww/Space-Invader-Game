@@ -34,6 +34,12 @@ Space Shooter is a simple, lightweight but engaging JavaFX-based game where play
     <img src="img/gameplay.png" alt="Space Shooter Game Interface" width="60%"/>
 </p>
 
+### Instructions
+
+<p align="center" style="cursor: pointer">
+    <img src="img/instructions.png" alt="Space Shooter Game Instructions" width="60%"/>
+</p>
+
 ### Losing Screen
 
 <p align="center" style="cursor: pointer">

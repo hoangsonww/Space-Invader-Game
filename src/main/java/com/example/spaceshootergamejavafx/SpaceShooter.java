@@ -108,14 +108,16 @@ public class SpaceShooter extends Application {
     Canvas canvas = new Canvas(WIDTH, HEIGHT);
     scoreLabel.setTranslateX(10);
     scoreLabel.setTranslateY(10);
-    scoreLabel.setTextFill(Color.BLACK);
-    scoreLabel.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+    scoreLabel.setTextFill(Color.WHITE);
+    scoreLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
 
+    root.setStyle("-fx-background-color: black;");
     root.getChildren().addAll(canvas, scoreLabel, lifeLabel);
+
     lifeLabel.setTranslateX(10);
     lifeLabel.setTranslateY(40);
-    lifeLabel.setTextFill(Color.BLACK);
-    lifeLabel.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+    lifeLabel.setTextFill(Color.WHITE);
+    lifeLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
 
     GraphicsContext gc = canvas.getGraphicsContext2D();
     gameObjects.add(player);
@@ -142,6 +144,8 @@ public class SpaceShooter extends Application {
               this.start();
               reset = false;
             }
+
+            gc.setFill(Color.BLACK);
             gc.clearRect(0, 0, WIDTH, HEIGHT);
 
             if (now - lastEnemySpawned > 1_000_000_000) {
@@ -298,7 +302,7 @@ public class SpaceShooter extends Application {
 
     // Game Over Text
     Text gameOverText = new Text("GAME OVER");
-    gameOverText.setFont(Font.font("Arial", FontWeight.BOLD, 40));
+    gameOverText.setFont(Font.font("Verdana", FontWeight.BOLD, 40));
     gameOverText.setFill(Color.RED);
     gameOverText.setX((WIDTH - gameOverText.getLayoutBounds().getWidth()) / 2);
     gameOverText.setY(150);
@@ -309,7 +313,7 @@ public class SpaceShooter extends Application {
     }
 
     Text scoreText = new Text("Your Score: " + score);
-    scoreText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+    scoreText.setFont(Font.font("Verdana", FontWeight.BOLD, 24));
     scoreText.setFill(Color.WHITE);
     scoreText.setX((WIDTH - scoreText.getLayoutBounds().getWidth()) / 2);
     scoreText.setY(250);
@@ -318,22 +322,22 @@ public class SpaceShooter extends Application {
     Button tryAgainButton = new Button("Try Again");
     tryAgainButton.setStyle(
         "-fx-background-color: #444; -fx-text-fill: white; -fx-font-size: 18; "
-            + "-fx-font-weight: bold; -fx-padding: 10 20;");
+            + "-fx-font-weight: bold; -fx-padding: 10 20; -fx-font-family: 'Verdana';");
     tryAgainButton.setOnMouseEntered(
         event -> {
           tryAgainButton.setStyle(
               "-fx-background-color: white; -fx-text-fill: black; -fx-font-size: 18; "
-                  + "-fx-font-weight: bold; -fx-padding: 10 20;");
+                  + "-fx-font-weight: bold; -fx-padding: 10 20; -fx-font-family: 'Verdana';");
           tryAgainButton.setEffect(new Glow(0.5));
         });
     tryAgainButton.setOnMouseExited(
         event -> {
           tryAgainButton.setStyle(
               "-fx-background-color: #444; -fx-text-fill: white; -fx-font-size: 18; "
-                  + "-fx-font-weight: bold; -fx-padding: 10 20;");
+                  + "-fx-font-weight: bold; -fx-padding: 10 20; -fx-font-family: 'Verdana';");
           tryAgainButton.setEffect(null);
         });
-    tryAgainButton.setLayoutX(120);
+    tryAgainButton.setLayoutX(115);
     tryAgainButton.setLayoutY(350);
     tryAgainButton.setOnAction(event -> restartGame());
 
@@ -341,22 +345,22 @@ public class SpaceShooter extends Application {
     Button exitButton = new Button("Exit Game");
     exitButton.setStyle(
         "-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-size: 18; "
-            + "-fx-font-weight: bold; -fx-padding: 10 20;");
+            + "-fx-font-weight: bold; -fx-padding: 10 20; -fx-font-family: 'Verdana';");
     exitButton.setOnMouseEntered(
         event -> {
           exitButton.setStyle(
               "-fx-background-color: white; -fx-text-fill: red; -fx-font-size: 18; "
-                  + "-fx-font-weight: bold; -fx-padding: 10 20;");
+                  + "-fx-font-weight: bold; -fx-padding: 10 20; -fx-font-family: 'Verdana';");
           exitButton.setEffect(new Glow(0.5));
         });
     exitButton.setOnMouseExited(
         event -> {
           exitButton.setStyle(
               "-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-size: 18; "
-                  + "-fx-font-weight: bold; -fx-padding: 10 20;");
+                  + "-fx-font-weight: bold; -fx-padding: 10 20; -fx-font-family: 'Verdana';");
           exitButton.setEffect(null);
         });
-    exitButton.setLayoutX(120);
+    exitButton.setLayoutX(115);
     exitButton.setLayoutY(450);
     exitButton.setOnAction(event -> System.exit(0));
 
@@ -465,7 +469,7 @@ public class SpaceShooter extends Application {
     Pane menuPane = new Pane();
     menuPane.setStyle(
         "-fx-background-color: linear-gradient(to bottom, #1e3c72, #2a5298);"); // Gradient
-                                                                                // background
+    // background
 
     // Styled title
     Text welcomeText = new Text("Welcome to\nSpace Shooter!");
@@ -515,7 +519,8 @@ public class SpaceShooter extends Application {
             + "-fx-border-radius: 20;"
             + "-fx-background-radius: 20;"
             + "-fx-border-color: #ffffff;"
-            + "-fx-border-width: 2;");
+            + "-fx-border-width: 2;"
+            + "-fx-font-family: 'Verdana';");
     button.setOnMouseEntered(
         event -> {
           button.setStyle(
@@ -527,7 +532,8 @@ public class SpaceShooter extends Application {
                   + "-fx-border-radius: 20;"
                   + "-fx-background-radius: 20;"
                   + "-fx-border-color: yellow;"
-                  + "-fx-border-width: 2;");
+                  + "-fx-border-width: 2;"
+                  + "-fx-font-family: 'Verdana';");
           button.setEffect(new Glow(0.5));
         });
     button.setOnMouseExited(
@@ -541,7 +547,8 @@ public class SpaceShooter extends Application {
                   + "-fx-border-radius: 20;"
                   + "-fx-background-radius: 20;"
                   + "-fx-border-color: #ffffff;"
-                  + "-fx-border-width: 2;");
+                  + "-fx-border-width: 2;"
+                  + "-fx-font-family: 'Verdana';");
           button.setEffect(null);
         });
     return button;
@@ -573,7 +580,7 @@ public class SpaceShooter extends Application {
    */
   private void showTempMessage(String message, double x, double y, double duration) {
     Text tempMessage = new Text(message);
-    tempMessage.setFont(Font.font("Arial", FontWeight.BOLD, 18));
+    tempMessage.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
     tempMessage.setFill(Color.RED);
     tempMessage.setX(x);
     tempMessage.setY(y);
