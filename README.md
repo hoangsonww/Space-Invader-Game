@@ -4,8 +4,10 @@
 
 - [Overview](#overview)
 - [User Interface](#user-interface)
+  - [Demo GIF](#demo-gif)
   - [Start Screen](#start-screen)
   - [Gameplay](#gameplay)
+  - [Instructions](#instructions)
   - [Losing Screen](#losing-screen)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
@@ -21,6 +23,14 @@
 Space Shooter is a simple, lightweight but engaging JavaFX-based game where players navigate a spaceship, avoiding enemies and obstacles while trying to achieve the highest score possible. The game incorporates features such as enemy spawn logic, collision detection, power-ups, and a scoring system, showcasing the capabilities of JavaFX in creating interactive 2D games.
 
 ## User Interface
+
+### Demo GIF
+
+<p align="center" style="cursor: pointer">
+    <img src="img/demo.gif" alt="Space Shooter Game Demo" width="60%"/>
+</p>
+
+> Our apologies for the low quality of the GIF. The actual game has a much smoother and visually appealing experience. Please try it out yourself! 😊
 
 ### Start Screen
 
